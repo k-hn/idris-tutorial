@@ -81,3 +81,30 @@ foo = (* 2)
 
 Baa : Bits32 -> Bits32
 Baa = foo
+
+
+-- Sum Types
+data Title = Mr | Mrs | Other String
+
+total
+dr : Title
+dr = Other "Dr."
+
+total
+showTitle : Title -> String
+showTitle Mr = "Mr."
+showTitle Mrs = "Mrs."
+showTitle (Other x) = x
+
+total
+greet : Title -> String -> String
+greet t name = "Hello, " ++ showTitle t ++ " " ++ name ++ "!"
+
+-- encapsulating two different login types in data type
+data Credentials = Password String Bits64 | Key String String
+
+total
+login : Credentials -> String
+login (Password "Anderson" 6665443) = greet Mr "Anderson"
+login (Key "Y" "xyz") = greet (Other "Agent") "Y"
+login _ = "Access denied"

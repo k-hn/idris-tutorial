@@ -108,3 +108,96 @@ login : Credentials -> String
 login (Password "Anderson" 6665443) = greet Mr "Anderson"
 login (Key "Y" "xyz") = greet (Other "Agent") "Y"
 login _ = "Access denied"
+
+
+-- Records
+-- Records a a product type - A composite representation of an entity
+
+record User where
+  constructor MkUser
+  name : String
+  title : Title
+  age : Bits8
+
+total
+agentY : User
+agentY = MkUser "Y" (Other "Agent") 51
+
+total
+drNo : User
+drNo = MkUser "No" dr 73
+
+total
+greetUser : User -> String
+greetUser (MkUser name title _) = greet title name
+
+failing "Mismatch between: String and Title"
+  greetUser' : User -> String
+  greetUser' (MkUser n t _) = greet n t
+
+
+-- Syntactic Sugar for Records
+
+total 
+incAge : User -> User
+incAge (MkUser name title age) = MkUser name title (age + 1)
+
+total
+incAge2 : User -> User
+incAge2 u = {age := u.age + 1} u
+
+total
+incAge3 : User -> User
+incAge3 u = { age $= (+ 1) } u
+
+total
+incAge4 : User -> User
+incAge4 u = { age $= \x => x + 1 } u
+
+total
+incAge5 : User -> User
+incAge5 = { age $= (+ 1) }
+
+total
+drNoJunior : User
+drNoJunior = { name $= (++ " Jr."), title := Mr, age := 17 } drNo
+
+
+-- Tuples
+record Foo2 where
+  constructor MkFoo2
+  wd : Weekday
+  bool : Bool
+
+-- Total possible value types for foo: 7 * 2 = 14
+-- Possible values for Weekday: 7
+-- Possible values for Bool: 2
+
+-- Pair is the canonical product type pair
+total
+weekdayAndBool : Weekday -> Bool -> Pair Weekday Bool
+weekdayAndBool wd b = MkPair wd b
+
+total
+weekdayAndBool2 : Weekday -> Bool -> (Weekday, Bool)
+weekdayAndBool2 wd b = (wd, b)
+
+total
+triple : Pair Bool (Pair Weekday String)
+triple = MkPair False (Friday, "foo")
+
+total
+triple2 : (Bool, Weekday, String)
+triple2 = (False, Friday, "foo")
+
+total
+bar : Bool
+bar = case triple of
+  (b, wd, _) => b && isWeekend wd
+
+
+
+-- As Patterns
+total
+baz : (Bool, Weekday, String) -> (Nat, Bool, Weekday, String)
+baz t@(_, _, s) = (length s, t)

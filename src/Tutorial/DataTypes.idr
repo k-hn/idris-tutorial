@@ -201,3 +201,101 @@ bar = case triple of
 total
 baz : (Bool, Weekday, String) -> (Nat, Bool, Weekday, String)
 baz t@(_, _, s) = (length s, t)
+
+
+-- Generic Data Types
+--- Maybe
+
+data MaybeWeekday = WD Weekday | NoWeekday
+
+total
+readWeekday : String -> MaybeWeekday
+readWeekday "Monday" = WD Monday
+readWeekday "Tuesday" = WD Tuesday
+readWeekday "Wednesday" = WD Wednesday
+readWeekday "Thursday" = WD Thursday
+readWeekday "Friday" = WD Friday
+readWeekday "Saturday" = WD Saturday
+readWeekday "Sunday" = WD Sunday
+readWeekday _ = NoWeekday
+
+-- In Idris, we can parameterize types
+-- Option a -> Type constructor
+-- Some a, None -> Data Constructors
+data Option a = Some a | None
+
+total
+readBool : String -> Option Bool
+readBool "True" = Some True
+readBool "False" = Some False
+readBool _ = None
+
+total
+safeDiv : Integer -> Integer -> Option Integer
+safeDiv n 0 = None
+safeDiv n k = Some (n `div` k)
+
+total
+safeDiv' : Integer -> Integer -> Maybe Integer
+safeDiv' n 0 = Nothing
+safeDiv' n k = Just (n `div` k)
+
+
+--- Either
+data Validated e a = Invalid e | Valid a
+
+total
+readWeekdayV : String -> Validated String Weekday
+readWeekdayV "Monday" = Valid Monday
+readWeekdayV "Tuesday" = Valid Tuesday
+readWeekdayV "Wednesday" = Valid Wednesday
+readWeekdayV "Thursday" = Valid Thursday
+readWeekdayV "Friday" = Valid Friday
+readWeekdayV "Saturday" = Valid Saturday
+readWeekdayV "Sunday" = Valid Sunday
+readWeekdayV s = Invalid ("Not a weekday: " ++ s)
+
+
+--- List
+-- The singly-linked list
+-- sample implementation
+data Seq a = Nil | (::) a (Seq a)
+
+total
+ints : List Int64
+ints = 1 :: 2 :: -3 :: Nil
+
+total
+ints2 : List Int64
+ints2 = [1, 2, -3]
+
+total
+ints3 : List Int64
+ints3 = []
+
+total
+intSum : List Integer -> Integer
+intSum Nil = 0
+intSum (n :: ns) = n + intSum ns
+
+
+-- Generic Functions
+total
+integerFromOption : Integer -> Option Integer -> Integer
+integerFromOption _ (Some y) = y
+integerFromOption x None = x
+
+-- generalising the above by parameterising the function over types
+total
+fromOption : a -> Option a -> a
+fromOption x None = x
+fromOption _ (Some y) = y
+
+total
+option : b -> (a -> b) -> Option a -> b
+option _ f (Some y) = f y
+option x _ None = x
+
+total
+handleBool : Option Bool -> String
+handleBool = option "Not a boolean value." show 

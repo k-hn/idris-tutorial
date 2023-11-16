@@ -299,3 +299,18 @@ option x _ None = x
 total
 handleBool : Option Bool -> String
 handleBool = option "Not a boolean value." show 
+
+
+-- Alternative Syntax for Data Definitions
+namespace GADT
+  data Option : Type -> Type where
+    Some : a -> Option a
+    None : Option a
+
+  data Validated : Type -> Type -> Type where
+    Invalid : e -> Validated e a
+    Valid : a -> Validated e a
+
+  data Seq : Type -> Type where
+    Nil : Seq a
+    (::) : a -> GADT.Seq a -> Seq a

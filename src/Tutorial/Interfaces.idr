@@ -82,3 +82,52 @@ maximum s1 s2 =
   case comp s1 s2 of
     GT => s1
     _ => s2
+
+
+-- More about interfaces
+interface Concat a where
+  concat : a -> a -> a
+
+implementation Concat String where
+  concat = (++)
+
+interface Concat a => Empty a where
+  empty : a
+
+implementation Empty String where
+  empty = ""
+
+concatListE : Empty a => List a -> a
+concatListE [] = empty
+concatListE (x :: xs) = concat x (concatListE xs)
+
+
+-- Constrained Implementations
+implementation Comp a => Comp (Maybe a) where
+  comp Nothing Nothing = EQ
+  comp (Just _) Nothing = GT
+  comp Nothing (Just _) = LT
+  comp (Just x) (Just y) = comp x y
+
+maxTest : Maybe Bits8 -> Ordering
+maxTest = comp (Just 12)
+
+
+-- Default Implementations
+interface Equals a where
+  eq : a -> a -> Bool
+
+  neq : a -> a -> Bool
+  neq a1 a2 = not (eq a1 a2)
+
+implementation Equals String where
+  eq = (==)
+
+implementation Equals Bool where
+  eq True True = True
+  eq False False = True
+  eq _ _ = False
+
+  neq True False = True
+  neq False True = True
+  neq _ _ = False

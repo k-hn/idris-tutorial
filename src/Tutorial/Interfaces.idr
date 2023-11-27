@@ -131,3 +131,31 @@ implementation Equals Bool where
   neq True False = True
   neq False True = True
   neq _ _ = False
+
+
+record UserName where
+  constructor MkUserName
+  name : String
+
+record Password where
+  constructor MkPassword
+  value : String
+
+record User where
+  constructor MkUser
+  name : UserName
+  password : Password
+
+hock : User
+hock = MkUser (MkUserName "hock") (MkPassword "not telling")
+
+implementation FromString UserName where
+  fromString = MkUserName
+
+implementation FromString Password where
+  fromString = MkPassword
+
+hock' : User
+hock' = MkUser "hock" "not telling"
+
+
